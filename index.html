@@ -37,7 +37,7 @@
   .header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); padding: 22px 24px 18px; text-align: center; position: relative; box-shadow: var(--shadow2); }
   .header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,var(--gold-mid),transparent); }
   .header-badge { display:inline-block; background:rgba(212,168,75,0.25); color:#f5d98a; font-size:10px; font-weight:700; letter-spacing:2px; padding:3px 14px; border-radius:20px; border:1px solid rgba(212,168,75,0.4); text-transform:uppercase; margin-bottom:10px; }
-  .header h1 { font-family:'Noto Sans TC',sans-serif; font-size:clamp(19px,4.5vw,27px); color:#fff; font-weight:900; line-height:1.35; letter-spacing:1px; }
+  .header h1 { font-family:'Noto Sans TC',sans-serif; font-size:clamp(19px,4.5vw,27px); color:#fff; font-weight:400; line-height:1.35; letter-spacing:1px; }
   .header-sub { font-size:12px; color:rgba(255,255,255,0.55); margin-top:5px; }
   .warning-banner {
     background: rgba(255,255,255,0.92);
@@ -46,11 +46,11 @@
     margin: 12px 0 0;
     padding: 9px 14px;
     font-size: 12.5px;
-    font-weight: 900;
+    font-weight: 400;
     font-family: 'Noto Sans TC', sans-serif;
     color: #1a1a1a;
     line-height: 1.7;
-    text-align: left;
+    text-align: center;
     letter-spacing: 0.3px;
   }
 
@@ -170,7 +170,7 @@
   .wtype-btn.active { background:#e8f0fb; border-color:var(--navy2); color:var(--navy); font-weight:600; }
 
   /* ── CALC BTN ── */
-  .calc-btn { width:100%; padding:16px; background:linear-gradient(135deg,var(--navy),var(--navy2)); border:none; border-radius:12px; font-size:17px; font-weight:700; color:#fff; cursor:pointer; font-family:'Noto Sans TC',sans-serif; letter-spacing:1px; transition:all .18s; margin-bottom:18px; box-shadow:0 4px 16px rgba(30,58,95,0.25); }
+  .calc-btn { width:100%; padding:16px; background:linear-gradient(135deg,var(--navy),var(--navy2)); border:none; border-radius:12px; font-size:17px; font-weight:400; color:#fff; cursor:pointer; font-family:'Noto Sans TC',sans-serif; letter-spacing:1px; transition:all .18s; margin-bottom:18px; box-shadow:0 4px 16px rgba(30,58,95,0.25); }
   .calc-btn:hover { transform:translateY(-1px); box-shadow:0 6px 22px rgba(30,58,95,0.35); }
   .calc-btn:active { transform:translateY(0); }
 
@@ -206,7 +206,7 @@
 
   /* ── FOOTER ── */
   .footer { background:var(--navy); padding:16px 20px; text-align:center; }
-  .footer-dev { font-size:14px; font-weight:700; color:#fff; }
+  .footer-dev { font-size:14px; font-weight:400; color:#fff; }
   .footer-meta { font-size:12px; color:rgba(255,255,255,0.55); margin-top:3px; }
   .footer-disclaimer { font-size:10px; color:rgba(255,255,255,0.35); margin-top:6px; line-height:1.6; }
 
@@ -223,7 +223,8 @@
   <h1>抗生素腎功能劑量調整</h1>
   <div class="header-sub">HD &amp; CRRT Antibiotic Dosing Reference</div>
   <div class="warning-banner">
-    注意：急重症患者建議於調整劑量前，先以正常腎功能劑量給藥 24 小時。本工具僅供臨床參考，請結合臨床判斷。
+    注意：急重症患者建議於調整劑量前，先以正常腎功能劑量給藥 24 小時。<br>
+    本工具僅供臨床參考，請結合臨床判斷。
   </div>
 </div>
 
@@ -293,22 +294,8 @@
 // ─── DRUG DATABASE ────────────────────────────────────────────────────────────
 const DRUGS = [
   {
-    name:'Acyclovir', letter:'A', wt:'AdjBW',
-    brand:'（無固定商品名）',
-    tags:['acyclovir','acv','zovirax'],
-    indications:[
-      { type:'標準劑量',
-        hd:'5 mg/kg q24h（透析後補充）',
-        crrt:{ anephric:'5 mg/kg q24h','1':'7.5 mg/kg q24h','2':'5 mg/kg q12h','3':'7.5 mg/kg q12h','4+':'10 mg/kg q12h'} },
-      { type:'輕度黏膜感染',
-        hd:'2.5 mg/kg q24h（透析後補充）',
-        crrt:{ anephric:'2.5 mg/kg q24h','1':'5 mg/kg q24h','2':'5 mg/kg q24h','3':'5 mg/kg q12h','4+':'5 mg/kg q12h'} }
-    ],
-    notes:['使用 AdjBW 計算（肥胖患者）']
-  },
-  {
     name:'Ampicillin', letter:'A',
-    brand:'（無固定商品名）',
+    brand:'Ampolin® 500 mg/vial',
     tags:['ampicillin','amp','ampi'],
     indications:[
       { type:'標準劑量',
@@ -334,7 +321,7 @@ const DRUGS = [
   },
   {
     name:'Cefazolin', letter:'C',
-    brand:'（無固定商品名）',
+    brand:'Cefa® 1 g/vial',
     tags:['cefazolin','ancef','kefzol'],
     indications:[
       { type:'標準劑量',
@@ -436,7 +423,7 @@ const DRUGS = [
   },
   {
     name:'Ceftriaxone', letter:'C',
-    brand:'2 g/vial',
+    brand:'Ceftriaxone 2 g/vial',
     tags:['ceftriaxone','rocephin'],
     indications:[
       { type:'標準劑量（不需腎功能調整）',
@@ -485,7 +472,7 @@ const DRUGS = [
   },
   {
     name:'Fluconazole', letter:'F',
-    brand:'（無固定商品名）',
+    brand:'Diflucan® 100 mg/vial',
     tags:['fluconazole','diflucan','fluco'],
     indications:[
       { type:'播散性感染',
@@ -535,7 +522,7 @@ const DRUGS = [
   },
   {
     name:'Levofloxacin', letter:'L',
-    brand:'（無固定商品名）',
+    brand:'Cravit® 250 mg/bot',
     tags:['levofloxacin','levaquin','levo'],
     indications:[
       { type:'標準劑量',
@@ -579,7 +566,7 @@ const DRUGS = [
   },
   {
     name:'Micafungin', letter:'M',
-    brand:'（無固定商品名）',
+    brand:'Mycamine® 50 mg/vial',
     tags:['micafungin','mycamine'],
     indications:[
       { type:'標準劑量',
@@ -589,18 +576,8 @@ const DRUGS = [
     notes:['CRRT：Loading 150 mg → 維持 100 mg q24h','ECMO 合併 CRRT：200 mg q24h','心內膜炎/食道念珠菌/耐藥菌/肥胖 → 劑量增加']
   },
   {
-    name:'Oseltamivir', letter:'O',
-    brand:'（無固定商品名）',
-    tags:['oseltamivir','tamiflu'],
-    indications:[
-      { type:'治療',
-        hd:'75 mg x1 → 30 mg 每週3次（透析後）',
-        crrt:{ anephric:'75 mg x1 → 30 mg 3x/週 post-HD','1':'30 mg q24h','2':'30 mg q12h','3':'75 mg q12h','4+':'75 mg q12h'} }
-    ]
-  },
-  {
     name:'Penicillin G', letter:'P',
-    brand:'（無固定商品名）',
+    brand:'Penicillin® 3 MU/vial',
     tags:['penicillin g','pen g','benzylpenicillin'],
     indications:[
       { type:'標準劑量',
@@ -635,7 +612,7 @@ const DRUGS = [
   },
   {
     name:'Vancomycin', letter:'V',
-    brand:'（無固定商品名）',
+    brand:'U-Vanco® 1 g/vial',
     tags:['vancomycin','vanco','vancocin'],
     indications:[
       { type:'依 AUC 監測（藥師評估）',
@@ -690,7 +667,7 @@ const DRUGS = [
   },
   {
     name:'Gentamicin', letter:'G',
-    brand:'80 mg/vial',
+    brand:'Gentamicin 80 mg/vial',
     tags:['gentamicin','gentamycin','aminoglycoside'],
     indications:[
       { type:'HD',
@@ -866,7 +843,7 @@ const DRUGS = [
   },
   {
     name:'Cefmetazole', letter:'C',
-    brand:'500 mg/vial',
+    brand:'Cefmetazole 500 mg/vial',
     tags:['cefmetazole'],
     indications:[
       { type:'標準劑量',
@@ -888,14 +865,43 @@ const DRUGS = [
   },
 ];
 
-// ─── GROUP BY LETTER ─────────────────────────────────────────────────────────
+// ─── GROUP BY LETTER (generic name + brand name first letter) ────────────────
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-const DRUG_MAP = {};
+const DRUG_MAP = {}; // letter → Set of drugs (deduped)
+
+function getBrandFirstLetter(d) {
+  if (!d.brand) return null;
+  // Strip leading non-alpha chars like spaces; get first real letter
+  const m = d.brand.match(/[A-Za-z]/);
+  return m ? m[0].toUpperCase() : null;
+}
+
 DRUGS.forEach(d => {
+  // Add under generic letter
   if (!DRUG_MAP[d.letter]) DRUG_MAP[d.letter] = [];
-  DRUG_MAP[d.letter].push(d);
+  if (!DRUG_MAP[d.letter].includes(d)) DRUG_MAP[d.letter].push(d);
+  // Also add under brand first letter (if different)
+  const bl = getBrandFirstLetter(d);
+  if (bl && bl !== d.letter) {
+    if (!DRUG_MAP[bl]) DRUG_MAP[bl] = [];
+    if (!DRUG_MAP[bl].includes(d)) DRUG_MAP[bl].push(d);
+  }
 });
-const AVAILABLE = new Set(DRUGS.map(d => d.letter));
+
+// Sort each letter group: drugs whose generic starts with that letter first,
+// then brand-only entries, all alphabetical within each group
+LETTERS.forEach(l => {
+  if (!DRUG_MAP[l]) return;
+  DRUG_MAP[l].sort((a, b) => {
+    const aGen = a.letter === l;
+    const bGen = b.letter === l;
+    if (aGen && !bGen) return -1;
+    if (!aGen && bGen) return 1;
+    return a.name.localeCompare(b.name);
+  });
+});
+
+const AVAILABLE = new Set(Object.keys(DRUG_MAP));
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 const S = { letter:null, drug:null, modality:null, flow:'2', weightType:'actual' };
@@ -905,7 +911,7 @@ const S = { letter:null, drug:null, modality:null, flow:'2', weightType:'actual'
 // query "pip tazo" matches any drug whose search corpus contains BOTH "pip" and "tazo"
 // regardless of which appears first.
 function tokenMatch(query, drug) {
-  const corpus = [drug.name, ...(drug.tags || [])].join(' ').toLowerCase();
+  const corpus = [drug.name, drug.brand || '', ...(drug.tags || [])].join(' ').toLowerCase();
   const tokens = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   return tokens.every(tok => corpus.includes(tok));
 }
@@ -943,14 +949,19 @@ function pickSearchResult(idx) {
   document.getElementById('searchResults').innerHTML = '';
   // select by letter then drug
   selectLetter(d.letter);
-  // find position in letter group and select
+  // find position in letter group and select, then scroll to it
   const drugs = DRUG_MAP[d.letter] || [];
   const pos = drugs.indexOf(d);
   if (pos >= 0) {
     S.drug = d;
     setTimeout(() => {
       const items = document.querySelectorAll('.drug-item');
-      items.forEach((el, j) => el.classList.toggle('selected', j === pos));
+      items.forEach((el, j) => {
+        el.classList.toggle('selected', j === pos);
+        if (j === pos) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
     }, 30);
   }
   hideResult();
@@ -997,9 +1008,11 @@ function renderDrugList() {
   drugs.forEach((d, i) => {
     const el = document.createElement('div');
     el.className = 'drug-item';
+    // Show a small "brand" badge when this drug appears here via brand letter
+    const viaBrand = d.letter !== S.letter;
     el.innerHTML = `
       <div>
-        <div class="drug-name">${d.name}</div>
+        <div class="drug-name">${d.name}${viaBrand ? ' <span style="font-size:11px;font-weight:400;color:var(--text3);">（品牌）</span>' : ''}</div>
         <div class="drug-cat">${d.brand ? d.brand+'　' : ''}${d.wt ? '體重：'+d.wt : ''}</div>
       </div>
       <div class="drug-arrow">›</div>`;
