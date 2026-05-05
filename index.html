@@ -259,16 +259,6 @@
     </button>
   </div>
 
-  <div class="crrt-flow-panel" id="crrtFlowPanel">
-    <div class="flow-label">Effluent Flow Rate（透析液 + 超濾液總量）</div>
-    <div class="flow-options">
-      <button class="flow-btn" data-flow="anephric" onclick="selectFlow('anephric')">無腎<br><span style="font-size:10px">Anephric</span></button>
-      <button class="flow-btn" data-flow="1"  onclick="selectFlow('1')">1 L/hr</button>
-      <button class="flow-btn active" data-flow="2" onclick="selectFlow('2')">2 L/hr</button>
-      <button class="flow-btn" data-flow="3"  onclick="selectFlow('3')">3 L/hr</button>
-      <button class="flow-btn" data-flow="4+" onclick="selectFlow('4+')">4+ L/hr</button>
-    </div>
-  </div>
   <div class="divider"></div>
 
   <!-- STEP 3 -->
@@ -291,7 +281,7 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  <div class="footer-dev">Developer：林鎮均</div>
+  <div class="footer-dev">Developer：林鎮均　梁琮偉</div>
   <div class="footer-meta">Version 1.0 &nbsp;|&nbsp; 2026年5月</div>
   <div class="footer-disclaimer">
     Based on Northwestern Medicine Antimicrobial CRRT Dosing Guidance (Updated Jan 2025)<br>
@@ -301,10 +291,10 @@
 
 <script>
 // ─── DRUG DATABASE ────────────────────────────────────────────────────────────
-// Sulbactam-durlobactam 已移除（台灣未上市）
 const DRUGS = [
   {
     name:'Acyclovir', letter:'A', wt:'AdjBW',
+    brand:'（無固定商品名）',
     tags:['acyclovir','acv','zovirax'],
     indications:[
       { type:'標準劑量',
@@ -318,6 +308,7 @@ const DRUGS = [
   },
   {
     name:'Ampicillin', letter:'A',
+    brand:'（無固定商品名）',
     tags:['ampicillin','amp','ampi'],
     indications:[
       { type:'標準劑量',
@@ -330,7 +321,8 @@ const DRUGS = [
   },
   {
     name:'Ampicillin-sulbactam', letter:'A',
-    tags:['ampicillin sulbactam','amp sulbactam','sulbactam ampicillin','unasyn'],
+    brand:'Sulampi® 1.5 g/vial',
+    tags:['ampicillin sulbactam','amp sulbactam','sulbactam ampicillin','unasyn','sulampi'],
     indications:[
       { type:'標準劑量',
         hd:'3 g q24h（透析後補充）',
@@ -341,16 +333,8 @@ const DRUGS = [
     ]
   },
   {
-    name:'Aztreonam', letter:'A',
-    tags:['aztreonam','azactam'],
-    indications:[
-      { type:'標準劑量',
-        hd:'2 g q24h',
-        crrt:{ anephric:'2 g q24h','1':'1 g q8h','2':'2 g q12h','3':'2 g q8h','4+':'2 g q8h'} }
-    ]
-  },
-  {
     name:'Cefazolin', letter:'C',
+    brand:'（無固定商品名）',
     tags:['cefazolin','ancef','kefzol'],
     indications:[
       { type:'標準劑量',
@@ -360,7 +344,8 @@ const DRUGS = [
   },
   {
     name:'Cefepime', letter:'C',
-    tags:['cefepime','maxipime'],
+    brand:'Supecef® 1 g/vial',
+    tags:['cefepime','maxipime','supecef'],
     indications:[
       { type:'嚴重感染（LD → 3h infusion）',
         hd:'1 g q24h 或 2 g 每週3次（透析後）',
@@ -373,6 +358,7 @@ const DRUGS = [
   },
   {
     name:'Cefiderocol', letter:'C',
+    brand:'Fetroja® 1 g/vial',
     tags:['cefiderocol','fetroja'],
     indications:[
       { type:'標準劑量',
@@ -381,17 +367,36 @@ const DRUGS = [
     ]
   },
   {
-    name:'Cefoxitin', letter:'C',
-    tags:['cefoxitin','mefoxin'],
+    name:'Cefoperazone-Sulbactam', letter:'C',
+    brand:'Brosym® 2 g/vial',
+    tags:['cefoperazone sulbactam','sulbactam cefoperazone','cefoperazone','brosym','cefoper'],
     indications:[
-      { type:'M. abscessus',
-        hd:'1 g q24h',
-        crrt:{ anephric:'1 g q24h','1':'2 g q12h','2':'2 g q12h','3':'2 g q8h','4+':'2 g q8h'} }
+      { type:'標準劑量',
+        hd:'2 g q12h（透析後補充）',
+        crrt:{ anephric:'2 g q24h','1':'2 g q12h','2':'2 g q12h','3':'2 g q8h','4+':'2 g q8h'} },
+      { type:'嚴重感染（Acinetobacter）',
+        hd:'4 g q12h（透析後補充）',
+        crrt:{ anephric:'2 g q12h','1':'2 g q8h','2':'4 g q12h','3':'4 g q8h','4+':'4 g q8h'} }
+    ],
+    notes:['Sulbactam 部分具腎臟清除，CRRT 可增加劑量','最大劑量 sulbactam 4 g/day（一般），Acinetobacter 感染可至 8 g/day']
+  },
+  {
+    name:'Cefotaxime', letter:'C',
+    brand:'Claforan® 2 g/vial',
+    tags:['cefotaxime','claforan'],
+    indications:[
+      { type:'標準劑量',
+        hd:'1 g q24h（透析後補充）',
+        crrt:{ anephric:'1 g q24h','1':'1 g q8h','2':'2 g q8h','3':'2 g q8h','4+':'2 g q6h'} },
+      { type:'CNS 感染 / 嚴重感染',
+        hd:'2 g q12h（透析後補充）',
+        crrt:{ anephric:'2 g q12h','1':'2 g q8h','2':'2 g q6h','3':'2 g q6h','4+':'2 g q4h'} }
     ]
   },
   {
     name:'Ceftaroline', letter:'C',
-    tags:['ceftaroline','teflaro'],
+    brand:'Zinforo® 600 mg/vial',
+    tags:['ceftaroline','teflaro','zinforo'],
     indications:[
       { type:'嚴重感染 / 菌血症 / 骨髓炎',
         hd:'200 mg q8h',
@@ -401,7 +406,8 @@ const DRUGS = [
   },
   {
     name:'Ceftazidime', letter:'C',
-    tags:['ceftazidime','fortaz','tazicef'],
+    brand:'Tatumcef® 2 g/vial',
+    tags:['ceftazidime','fortaz','tazicef','tatumcef'],
     indications:[
       { type:'標準劑量',
         hd:'1 g q24h 或 2,2,2 g 每週3次（透析後）',
@@ -410,7 +416,8 @@ const DRUGS = [
   },
   {
     name:'Ceftazidime-avibactam', letter:'C',
-    tags:['ceftazidime avibactam','avibactam ceftazidime','caz avi','avycaz'],
+    brand:'Zavicefta® 2.5 g/vial',
+    tags:['ceftazidime avibactam','avibactam ceftazidime','caz avi','avycaz','zavicefta'],
     indications:[
       { type:'標準劑量',
         hd:'0.94 g q24h',
@@ -419,6 +426,7 @@ const DRUGS = [
   },
   {
     name:'Ceftolozane-tazobactam', letter:'C',
+    brand:'Zerbaxa® 1.5 g/vial',
     tags:['ceftolozane tazobactam','tazobactam ceftolozane','zerbaxa'],
     indications:[
       { type:'標準劑量',
@@ -427,8 +435,20 @@ const DRUGS = [
     ]
   },
   {
+    name:'Ceftriaxone', letter:'C',
+    brand:'2 g/vial',
+    tags:['ceftriaxone','rocephin'],
+    indications:[
+      { type:'標準劑量（不需腎功能調整）',
+        hd:'1-2 g q24h（不需調整）',
+        crrt:{ anephric:'1-2 g q24h','1':'1-2 g q24h','2':'1-2 g q24h','3':'1-2 g q24h','4+':'2 g q12h（低白蛋白考慮增量）'} }
+    ],
+    notes:['不需腎功能調整','低白蛋白血症（hypoalbuminemia）時可考慮 2 g q12h']
+  },
+  {
     name:'Ciprofloxacin', letter:'C',
-    tags:['ciprofloxacin','cipro'],
+    brand:'Seforce® 400 mg/bag',
+    tags:['ciprofloxacin','cipro','seforce'],
     indications:[
       { type:'嚴重感染 / Pseudomonas / 降階治療',
         hd:'400 mg q24h',
@@ -440,7 +460,8 @@ const DRUGS = [
   },
   {
     name:'Colistin', letter:'C',
-    tags:['colistin','polymyxin e','coly mycin'],
+    brand:'Colimycin® 2 MU (66.8 mg)/vial',
+    tags:['colistin','polymyxin e','colimycin'],
     indications:[
       { type:'尿路感染（僅限）',
         hd:'1.5 mg/kg q48h',
@@ -450,6 +471,7 @@ const DRUGS = [
   },
   {
     name:'Daptomycin', letter:'D', wt:'AdjBW',
+    brand:'Cubicin® 500 mg/vial',
     tags:['daptomycin','cubicin','dapto'],
     indications:[
       { type:'嚴重 Staph 感染（8 mg/kg）',
@@ -462,26 +484,8 @@ const DRUGS = [
     notes:['四捨五入至最近 250 mg，最大 1000 mg','使用 AdjBW（肥胖患者）','監測肌酸激酶（CK）']
   },
   {
-    name:'Entecavir', letter:'E',
-    tags:['entecavir','baraclude'],
-    indications:[
-      { type:'B 型肝炎治療',
-        hd:'0.05-0.1 mg/day',
-        crrt:{ anephric:'0.05-0.1 mg/day','1':'0.1 mg/day','2':'0.2 mg/day','3':'0.3 mg/day','4+':'0.4 mg/day'} }
-    ]
-  },
-  {
-    name:'Ethambutol', letter:'E', wt:'IBW',
-    tags:['ethambutol','myambutol','emb'],
-    indications:[
-      { type:'TB / NTM（參照專科指引）',
-        hd:'15 或 25 mg/kg 每週3次（透析後）',
-        crrt:{ anephric:'15 或 25 mg/kg 3x/週 post-HD','1':'15-20 mg/kg PO q24h\nConsider ID Consult','2':'15-20 mg/kg PO q24h','3':'15-20 mg/kg PO q24h','4+':'15-20 mg/kg PO q24h'} }
-    ],
-    notes:['使用 IBW 計算','四捨五入至最近 100 或 400 mg 錠']
-  },
-  {
     name:'Fluconazole', letter:'F',
+    brand:'（無固定商品名）',
     tags:['fluconazole','diflucan','fluco'],
     indications:[
       { type:'播散性感染',
@@ -497,27 +501,9 @@ const DRUGS = [
     notes:['臨床適當時應給予 Loading Dose']
   },
   {
-    name:'Flucytosine', letter:'F',
-    tags:['flucytosine','5fc','ancobon'],
-    indications:[
-      { type:'標準劑量',
-        hd:'25 mg/kg q48h',
-        crrt:{ anephric:'25 mg/kg q48h','1':'25 mg/kg q24h','2':'25 mg/kg q12h','3':'25 mg/kg q6h','4+':'25 mg/kg q6h'} }
-    ]
-  },
-  {
-    name:'Foscarnet', letter:'F', wt:'AdjBW',
-    tags:['foscarnet','foscavir'],
-    indications:[
-      { type:'標準劑量',
-        hd:'不建議（0 mg/kg/day）',
-        crrt:{ anephric:'0 mg/kg/day','1':'20 mg/kg/day','2':'45 mg/kg/day','3':'70 mg/kg/day','4+':'90 mg/kg/day'} }
-    ],
-    notes:['使用 AdjBW 計算']
-  },
-  {
     name:'Ganciclovir', letter:'G',
-    tags:['ganciclovir','cytovene','gcv'],
+    brand:'Cymevene® 500 mg/vial',
+    tags:['ganciclovir','cytovene','gcv','cymevene'],
     indications:[
       { type:'誘導期（Induction）',
         hd:'1.25 mg/kg q24h',
@@ -529,7 +515,8 @@ const DRUGS = [
   },
   {
     name:'Imipenem', letter:'I',
-    tags:['imipenem','primaxin','ipm'],
+    brand:'Culin® 500 mg/vial',
+    tags:['imipenem','primaxin','ipm','culin'],
     indications:[
       { type:'標準劑量（imipenem 500 mg 計）',
         hd:'500 mg q12h',
@@ -538,6 +525,7 @@ const DRUGS = [
   },
   {
     name:'Imipenem-relebactam', letter:'I',
+    brand:'Recarbrio® 0.25 g/vial（relebactam 部分）',
     tags:['imipenem relebactam','relebactam imipenem','recarbrio'],
     indications:[
       { type:'1.25 g = IPM 500 + cilastatin 500 + relebactam 250',
@@ -547,6 +535,7 @@ const DRUGS = [
   },
   {
     name:'Levofloxacin', letter:'L',
+    brand:'（無固定商品名）',
     tags:['levofloxacin','levaquin','levo'],
     indications:[
       { type:'標準劑量',
@@ -557,6 +546,7 @@ const DRUGS = [
   },
   {
     name:'Linezolid', letter:'L',
+    brand:'Zyvox® 600 mg/bag',
     tags:['linezolid','zyvox','lzd'],
     indications:[
       { type:'標準劑量',
@@ -567,7 +557,8 @@ const DRUGS = [
   },
   {
     name:'Meropenem', letter:'M',
-    tags:['meropenem','merrem','mem'],
+    brand:'Mepem® 250 mg/vial',
+    tags:['meropenem','merrem','mem','mepem'],
     indications:[
       { type:'全身性/CNS/敗血症（LD → 3h infusion）',
         hd:'1 g q24h',
@@ -576,17 +567,9 @@ const DRUGS = [
     notes:['CNS/Pseudomonas：4+ L/hr 時使用 2 g q8h','建議延長輸注（3 小時）']
   },
   {
-    name:'Meropenem-vaborbactam', letter:'M',
-    tags:['meropenem vaborbactam','vaborbactam meropenem','vabomere'],
-    indications:[
-      { type:'標準劑量（combination 計）',
-        hd:'1 g q12h',
-        crrt:{ anephric:'1 g q12h','1':'1 g q8h','2':'2 g q8h','3':'2 g q8h','4+':'4 g q8h'} }
-    ]
-  },
-  {
     name:'Metronidazole', letter:'M',
-    tags:['metronidazole','flagyl','metro'],
+    brand:'SABS® 500 mg/bot',
+    tags:['metronidazole','flagyl','metro','sabs'],
     indications:[
       { type:'標準劑量',
         hd:'500 mg q12h',
@@ -596,6 +579,7 @@ const DRUGS = [
   },
   {
     name:'Micafungin', letter:'M',
+    brand:'（無固定商品名）',
     tags:['micafungin','mycamine'],
     indications:[
       { type:'標準劑量',
@@ -606,6 +590,7 @@ const DRUGS = [
   },
   {
     name:'Oseltamivir', letter:'O',
+    brand:'（無固定商品名）',
     tags:['oseltamivir','tamiflu'],
     indications:[
       { type:'治療',
@@ -615,6 +600,7 @@ const DRUGS = [
   },
   {
     name:'Penicillin G', letter:'P',
+    brand:'（無固定商品名）',
     tags:['penicillin g','pen g','benzylpenicillin'],
     indications:[
       { type:'標準劑量',
@@ -624,17 +610,19 @@ const DRUGS = [
   },
   {
     name:'Piperacillin-tazobactam', letter:'P',
-    tags:['piperacillin tazobactam','tazobactam piperacillin','pip tazo','tazo pip','pip taz','taz pip','zosyn','tazocin'],
+    brand:'Tapimycin® 2.25 g/vial',
+    tags:['piperacillin tazobactam','tazobactam piperacillin','pip tazo','tazo pip','pip taz','taz pip','zosyn','tazocin','tapimycin'],
     indications:[
       { type:'標準劑量（LD → 4h infusion）',
         hd:'4.5 g q12h',
         crrt:{ anephric:'4.5 g q12h','1':'4.5 g q12h','2':'4.5 g q8h','3':'4.5 g q8h','4+':'4.5 g q8h'} }
     ],
-    notes:['建議延長輸注（4 小時）']
+    notes:['建議延長輸注（4 小時）','Tapimycin® 每瓶 2.25 g，給藥 4.5 g = 2 瓶']
   },
   {
     name:'TMP-SMX', letter:'T', wt:'AdjBW',
-    tags:['tmp smx','smx tmp','trimethoprim sulfamethoxazole','sulfamethoxazole trimethoprim','cotrimoxazole','bactrim','septra'],
+    brand:'Sevatrim® inj 80/400 mg/amp',
+    tags:['tmp smx','smx tmp','trimethoprim sulfamethoxazole','sulfamethoxazole trimethoprim','cotrimoxazole','bactrim','septra','sevatrim'],
     indications:[
       { type:'嚴重全身性感染（TMP 劑量計）',
         hd:'2.5 mg/kg q24h（max 320 mg）',
@@ -643,10 +631,11 @@ const DRUGS = [
         hd:'5 mg/kg q24h（max 320 mg）',
         crrt:{ anephric:'5 mg/kg q24h (max 320 mg)','1':'7.5 mg/kg q24h','2':'5 mg/kg q12h','3':'5 mg/kg q12h','4+':'5 mg/kg q8h\n(max 320 mg/dose)'} }
     ],
-    notes:['使用 AdjBW 計算','PO 劑量四捨五入至最近 DS 錠（160 mg TMP）']
+    notes:['使用 AdjBW 計算','Sevatrim® inj 每 amp = TMP 80 mg + SMX 400 mg','PO 劑量四捨五入至最近 DS 錠（160 mg TMP）']
   },
   {
     name:'Vancomycin', letter:'V',
+    brand:'（無固定商品名）',
     tags:['vancomycin','vanco','vancocin'],
     indications:[
       { type:'依 AUC 監測（藥師評估）',
@@ -654,7 +643,249 @@ const DRUGS = [
         crrt:{ anephric:'依 AUC protocol','1':'Loading 20-25 mg/kg\n→ 10-15 mg/kg q24h，依濃度調整','2':'Loading 20-25 mg/kg\n→ 10-15 mg/kg q24h，依濃度調整','3':'Loading 20-25 mg/kg\n→ 10-15 mg/kg q24h，依濃度調整','4+':'Loading 20-25 mg/kg\n→ 10-15 mg/kg q24h，依濃度調整'} }
     ],
     notes:['四捨五入至最近 250 mg','Loading：20-25 mg/kg（一次性）','維持：10-15 mg/kg q24h，依 AUC/trough 調整','請會診臨床藥師協助劑量監測']
-  }
+  },
+  {
+    name:'Minocycline', letter:'M',
+    brand:'Menocik® 100 mg/vial',
+    tags:['minocycline','menocik'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'100 mg q12h（不需調整）',
+        crrt:{ anephric:'100 mg q12h','1':'100 mg q12h','2':'100 mg q12h','3':'100 mg q12h','4+':'100 mg q12h'} }
+    ],
+    notes:['肝臟代謝為主，透析不移除，不需劑量調整']
+  },
+  {
+    name:'Polymyxin B', letter:'P',
+    brand:'Bobimycin® 50 mg/vial',
+    tags:['polymyxin b','polymyxin','bobimycin'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'1.25-1.5 mg/kg q12h（不需調整）',
+        crrt:{ anephric:'1.25-1.5 mg/kg q12h','1':'1.25-1.5 mg/kg q12h','2':'1.25-1.5 mg/kg q12h','3':'1.25-1.5 mg/kg q12h','4+':'1.25-1.5 mg/kg q12h'} }
+    ],
+    notes:['非腎臟排泄，不需劑量調整（HD 或 CRRT 均相同）']
+  },
+  {
+    name:'Amoxicillin-Clavulanate', letter:'A',
+    brand:'Curam® 1.2 g/vial',
+    tags:['amoxicillin clavulanate','clavulanate amoxicillin','augmentin','curam','amoxiclav'],
+    indications:[
+      { type:'標準劑量',
+        hd:'1.2 g q24h（HD 後補 0.6 g）',
+        crrt:{ anephric:'1.2 g q24h','1':'1.2 g q12h','2':'1.2 g q8-12h','3':'1.2 g q8h','4+':'1.2 g q8h'} }
+    ],
+    notes:['CRRT 下清除率高，需頻繁給藥']
+  },
+  {
+    name:'Amikacin', letter:'A', wt:'AdjBW',
+    brand:'Aminfec® 250 mg/vial',
+    tags:['amikacin','aminfec','amikacin aminoglycoside'],
+    indications:[
+      { type:'HD',
+        hd:'5-7.5 mg/kg HD 後給予，依血中濃度調整',
+        crrt:{ anephric:'5 mg/kg，依濃度調整','1':'7.5-10 mg/kg q24-48h','2':'7.5-10 mg/kg q24-48h','3':'7.5-10 mg/kg q24h','4+':'7.5-10 mg/kg q24h'} }
+    ],
+    notes:['必須監測血中濃度（TDM）','Aminoglycoside 類，腎毒性高，需密切追蹤']
+  },
+  {
+    name:'Gentamicin', letter:'G',
+    brand:'80 mg/vial',
+    tags:['gentamicin','gentamycin','aminoglycoside'],
+    indications:[
+      { type:'HD',
+        hd:'1-1.5 mg/kg HD 後給予，依血中濃度調整',
+        crrt:{ anephric:'1 mg/kg，依濃度調整','1':'1.5-2.5 mg/kg q24-48h','2':'1.5-2.5 mg/kg q24-48h','3':'1.5-2.5 mg/kg q24h','4+':'1.5-2.5 mg/kg q24h'} }
+    ],
+    notes:['必須監測血中濃度（TDM）','Aminoglycoside 類，腎毒性高，需密切追蹤']
+  },
+  {
+    name:'Teicoplanin', letter:'T',
+    brand:'Targocid® 200 mg/vial',
+    tags:['teicoplanin','targocid'],
+    indications:[
+      { type:'標準劑量',
+        hd:'維持量 6-12 mg/kg q72h',
+        crrt:{ anephric:'6-12 mg/kg q72h','1':'6-12 mg/kg q24-48h','2':'6-12 mg/kg q24-48h','3':'6-12 mg/kg q24h','4+':'6-12 mg/kg q24h'} }
+    ],
+    notes:['高度蛋白結合，CRRT 緩慢移除','建議監測血中濃度（TDM）']
+  },
+  {
+    name:'Moxifloxacin', letter:'M',
+    brand:'Mosflow® 400 mg/vial',
+    tags:['moxifloxacin','mosflow','avelox'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'400 mg q24h（不需調整）',
+        crrt:{ anephric:'400 mg q24h','1':'400 mg q24h','2':'400 mg q24h','3':'400 mg q24h','4+':'400 mg q24h'} }
+    ],
+    notes:['肝臟代謝為主，不需腎功能調整']
+  },
+  {
+    name:'Clarithromycin', letter:'C',
+    brand:'Klaricid® 500 mg/vial',
+    tags:['clarithromycin','klaricid','biaxin'],
+    indications:[
+      { type:'標準劑量',
+        hd:'250 mg q12h',
+        crrt:{ anephric:'250 mg q12h','1':'250 mg q12h','2':'250-500 mg q12h','3':'500 mg q12h','4+':'500 mg q12h'} }
+    ],
+    notes:['視感染嚴重度調整劑量']
+  },
+  {
+    name:'Erythromycin', letter:'E',
+    brand:'Erythrocin® 500 mg/vial',
+    tags:['erythromycin','erythrocin'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'500 mg q6h（不需調整）',
+        crrt:{ anephric:'500 mg q6h','1':'500 mg q6h','2':'500 mg q6h','3':'500 mg q6h','4+':'500 mg q6h'} }
+    ],
+    notes:['肝臟代謝為主，不需腎功能調整']
+  },
+  {
+    name:'Cefuroxime', letter:'C',
+    brand:'Gibicef® 1 g/vial',
+    tags:['cefuroxime','gibicef','zinacef'],
+    indications:[
+      { type:'標準劑量',
+        hd:'0.75 g q24h（HD 後補充）',
+        crrt:{ anephric:'0.75 g q24h','1':'0.75 g q12h','2':'0.75-1.5 g q12h','3':'1.5 g q12h','4+':'1.5 g q8h'} }
+    ],
+    notes:['水溶性高，易被 CRRT 移除']
+  },
+  {
+    name:'Ertapenem', letter:'E',
+    brand:'Invanz® 1 g/vial',
+    tags:['ertapenem','invanz'],
+    indications:[
+      { type:'標準劑量',
+        hd:'500 mg q24h（若 HD 前 <6h 給藥，HD 後補 150 mg）',
+        crrt:{ anephric:'500 mg q24h','1':'500 mg q24h','2':'500 mg q24h','3':'500 mg q24h','4+':'500 mg q24h'} }
+    ],
+    notes:['HD 後補充：若給藥離 HD <6h，HD 後補 150 mg']
+  },
+  {
+    name:'Tigecycline', letter:'T',
+    brand:'Tygacil® 50 mg/vial',
+    tags:['tigecycline','tygacil'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'50 mg q12h（不需調整）',
+        crrt:{ anephric:'50 mg q12h','1':'50 mg q12h','2':'50 mg q12h','3':'50 mg q12h','4+':'50 mg q12h'} }
+    ],
+    notes:['分佈體積大，透析不移除，不需劑量調整']
+  },
+  {
+    name:'Fosfomycin', letter:'F',
+    brand:'UFO® 2 g/vial',
+    tags:['fosfomycin','ufo'],
+    indications:[
+      { type:'標準劑量',
+        hd:'2 g q24h（HD 後補充）',
+        crrt:{ anephric:'2 g q24h','1':'2 g q12h','2':'2 g q8-12h','3':'2 g q8h','4+':'2 g q8h'} }
+    ],
+    notes:['CRRT 清除率極高，需增加給藥頻率']
+  },
+  {
+    name:'Flomoxef', letter:'F',
+    brand:'Flumarin® 1 g/vial',
+    tags:['flomoxef','flumarin'],
+    indications:[
+      { type:'標準劑量',
+        hd:'0.5-1 g q24h',
+        crrt:{ anephric:'0.5-1 g q24h','1':'1 g q12h','2':'1 g q12h','3':'1 g q8h','4+':'1 g q8h'} }
+    ],
+    notes:['需根據臨床反應調整劑量']
+  },
+  {
+    name:'Clindamycin', letter:'C',
+    brand:'Clincin® 300 mg/vial',
+    tags:['clindamycin','clincin','cleocin'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'600-900 mg q8h（不需調整）',
+        crrt:{ anephric:'600-900 mg q8h','1':'600-900 mg q8h','2':'600-900 mg q8h','3':'600-900 mg q8h','4+':'600-900 mg q8h'} }
+    ],
+    notes:['肝臟代謝為主，不需腎功能調整']
+  },
+  {
+    name:'Oxacillin', letter:'O',
+    brand:'Ocillina® 500 mg/vial',
+    tags:['oxacillin','ocillina','nafcillin'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'1-2 g q4-6h（不需調整）',
+        crrt:{ anephric:'1-2 g q4-6h','1':'1-2 g q4-6h','2':'1-2 g q4-6h','3':'1-2 g q4-6h','4+':'1-2 g q4-6h'} }
+    ],
+    notes:['肝臟代謝為主，不需腎功能調整']
+  },
+  {
+    name:'Anidulafungin', letter:'A',
+    brand:'Eraxis® 100 mg/vial',
+    tags:['anidulafungin','eraxis'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'100 mg q24h（不需調整）',
+        crrt:{ anephric:'100 mg q24h','1':'100 mg q24h','2':'100 mg q24h','3':'100 mg q24h','4+':'100 mg q24h'} }
+    ],
+    notes:['非腎臟清除，不需劑量調整']
+  },
+  {
+    name:'Amphotericin B', letter:'A',
+    brand:'Fungizone® 100 mg/vial',
+    tags:['amphotericin b','fungizone','ampho b','amphotericin'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'0.5-1 mg/kg q24h（不需調整）',
+        crrt:{ anephric:'0.5-1 mg/kg q24h','1':'0.5-1 mg/kg q24h','2':'0.5-1 mg/kg q24h','3':'0.5-1 mg/kg q24h','4+':'0.5-1 mg/kg q24h'} }
+    ],
+    notes:['蛋白結合率高，透析不移除，不需劑量調整','腎毒性強，腎衰竭患者建議改用脂質型製劑']
+  },
+  {
+    name:'Liposomal Amphotericin B', letter:'L',
+    brand:'Lipo-AB® 100 mg/vial',
+    tags:['liposomal amphotericin','lipo ab','lipo amphotericin','ambisome'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'3-5 mg/kg q24h（不需調整）',
+        crrt:{ anephric:'3-5 mg/kg q24h','1':'3-5 mg/kg q24h','2':'3-5 mg/kg q24h','3':'3-5 mg/kg q24h','4+':'3-5 mg/kg q24h'} }
+    ],
+    notes:['透析不需調整劑量','腎毒性低於傳統 Amphotericin B']
+  },
+  {
+    name:'Voriconazole', letter:'V',
+    brand:'Vfend® 200 mg/vial',
+    tags:['voriconazole','vfend'],
+    indications:[
+      { type:'建議改口服',
+        hd:'建議口服 200 mg q12h',
+        crrt:{ anephric:'建議口服 200 mg q12h','1':'建議口服 200 mg q12h','2':'建議口服 200 mg q12h','3':'建議口服 200 mg q12h','4+':'建議口服 200 mg q12h'} }
+    ],
+    notes:['靜脈注射賦形劑 SBECD 在腎衰竭時蓄積，具毒性','腎功能不全患者強烈建議改用口服製劑']
+  },
+  {
+    name:'Cefmetazole', letter:'C',
+    brand:'500 mg/vial',
+    tags:['cefmetazole'],
+    indications:[
+      { type:'標準劑量',
+        hd:'1-2 g q24h（HD 後補充）',
+        crrt:{ anephric:'1-2 g q24h','1':'1-2 g q12h','2':'1-2 g q12h','3':'1-2 g q8h','4+':'1-2 g q8h'} }
+    ],
+    notes:['水溶性高，CRRT 下清除明顯']
+  },
+  {
+    name:'Isavuconazole', letter:'I',
+    brand:'Cresemba® 200 mg/vial',
+    tags:['isavuconazole','cresemba','isavuconazonium'],
+    indications:[
+      { type:'標準劑量（不需調整）',
+        hd:'200 mg q24h（不需調整）',
+        crrt:{ anephric:'200 mg q24h','1':'200 mg q24h','2':'200 mg q24h','3':'200 mg q24h','4+':'200 mg q24h'} }
+    ],
+    notes:['蛋白結合率 >99%，不受透析影響，不需劑量調整']
+  },
 ];
 
 // ─── GROUP BY LETTER ─────────────────────────────────────────────────────────
@@ -695,7 +926,7 @@ function onSearch() {
       <div class="search-result-item" data-idx="${i}" onclick="pickSearchResult(${DRUGS.indexOf(d)})">
         <div>
           <div class="sri-name">${d.name}</div>
-          <div class="sri-match">${d.letter} &nbsp;|&nbsp; ${d.indications.length > 1 ? d.indications.length+' 種適應症' : '1 種適應症'}</div>
+          <div class="sri-match">${d.brand ? d.brand : ''}${d.brand && d.wt ? '　' : ''}${d.wt ? '體重：'+d.wt : ''}</div>
         </div>
         <div class="drug-arrow">›</div>
       </div>`).join('');
@@ -769,7 +1000,7 @@ function renderDrugList() {
     el.innerHTML = `
       <div>
         <div class="drug-name">${d.name}</div>
-        <div class="drug-cat">${d.wt ? '體重依據：'+d.wt+'　' : ''}${d.indications.length>1 ? d.indications.length+' 種適應症' : ''}</div>
+        <div class="drug-cat">${d.brand ? d.brand+'　' : ''}${d.wt ? '體重：'+d.wt : ''}</div>
       </div>
       <div class="drug-arrow">›</div>`;
     el.onclick = () => {
@@ -784,16 +1015,9 @@ function renderDrugList() {
 // ─── MODALITY ────────────────────────────────────────────────────────────────
 function selectModality(m) {
   S.modality = m;
+  S.flow = m === 'CRRT' ? '2' : null; // CRRT fixed at 2 L/hr
   document.getElementById('btnHD').className   = 'modality-btn' + (m==='HD'   ? ' active-hd'   : '');
   document.getElementById('btnCRRT').className = 'modality-btn' + (m==='CRRT' ? ' active-crrt' : '');
-  document.getElementById('crrtFlowPanel').classList.toggle('visible', m==='CRRT');
-  hideResult();
-}
-
-// ─── FLOW ────────────────────────────────────────────────────────────────────
-function selectFlow(f) {
-  S.flow = f;
-  document.querySelectorAll('.flow-btn').forEach(b => b.classList.toggle('active', b.dataset.flow === f));
   hideResult();
 }
 
@@ -843,11 +1067,14 @@ function renderResult(w) {
   const wtLabel = { actual:'實際體重', ibw:'理想體重(IBW)', adj:'校正體重(AdjBW)' }[S.weightType];
   const wtNote  = `${wtLabel} ${w} kg${d.wt ? '（本藥建議使用 '+d.wt+'）' : ''}`;
   const badgeClass = m==='HD' ? 'badge-hd' : 'badge-crrt';
-  const badgeText  = m==='HD' ? '間歇性 HD' : `CRRT ${f==='anephric' ? 'Anephric' : f+' L/hr'}`;
+  const badgeText  = m==='HD' ? '間歇性 HD' : 'CRRT（2 L/hr）';
 
   let html = `
     <div class="result-header">
-      <div class="result-drug-name">${d.name}</div>
+      <div>
+        <div class="result-drug-name">${d.name}</div>
+        ${d.brand ? `<div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;">${d.brand}</div>` : ''}
+      </div>
       <div class="result-modality-badge ${badgeClass}">${badgeText}</div>
     </div>
     <div class="indications-section">`;
@@ -873,7 +1100,7 @@ function renderResult(w) {
         </div>
         <div class="info-cell">
           <div class="info-cell-label">Flow Rate</div>
-          <div class="info-cell-value">${f==='anephric' ? 'Anephric' : f+' L/hr'}</div>
+          <div class="info-cell-value">2 L/hr</div>
         </div>
         <div class="info-cell">
           <div class="info-cell-label">體重</div>
