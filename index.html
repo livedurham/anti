@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抗生素腎功能劑量調整</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #f4f6f9;
+    --bg2:       #eaecf2;
+    --bg3:       #dde1ea;
+    --card:      #ffffff;
+    --card2:     #f0f3f8;
+    --border:    #d0d5e3;
+    --border2:   #bcc3d6;
+    --navy:      #1e3a5f;
+    --navy2:     #2b4f82;
+    --teal:      #1a7f75;
+    --teal-lt:   #e6f5f3;
+    --teal-mid:  #a8d8d4;
+    --gold:      #8a6a1f;
+    --gold-lt:   #fdf3dc;
+    --gold-mid:  #d4a84b;
+    --purple:    #5a3e8a;
+    --purple-lt: #f0ebfb;
+    --text:      #1a2035;
+    --text2:     #4a5370;
+    --text3:     #8a90a8;
+    --shadow:    0 2px 12px rgba(30,58,95,0.08);
+    --shadow2:   0 4px 20px rgba(30,58,95,0.13);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* ── HEADER ── */
+  .header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); padding: 22px 24px 18px; text-align: center; position: relative; box-shadow: var(--shadow2); }
+  .header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,var(--gold-mid),transparent); }
+  .header-badge { display:inline-block; background:rgba(212,168,75,0.25); color:#f5d98a; font-size:10px; font-weight:700; letter-spacing:2px; padding:3px 14px; border-radius:20px; border:1px solid rgba(212,168,75,0.4); text-transform:uppercase; margin-bottom:10px; }
+  .header h1 { font-family:'Noto Sans TC',sans-serif; font-size:clamp(19px,4.5vw,27px); color:#fff; font-weight:900; line-height:1.35; letter-spacing:1px; }
+  .header-sub { font-size:12px; color:rgba(255,255,255,0.55); margin-top:5px; }
+  .warning-banner {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(255,220,100,0.5);
+    border-radius: 8px;
+    margin: 12px 0 0;
+    padding: 9px 14px;
+    font-size: 12.5px;
+    font-weight: 900;
+    font-family: 'Noto Sans TC', sans-serif;
+    color: #1a1a1a;
+    line-height: 1.7;
+    text-align: left;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── MAIN ── */
+  .main { flex:1; padding:18px 16px 10px; max-width:680px; margin:0 auto; width:100%; }
+
+  /* ── SECTION LABEL ── */
+  .section-label { font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:9px; display:flex; align-items:center; gap:6px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── SEARCH BOX ── */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 40px 11px 14px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    outline: none;
+    transition: border-color .18s, box-shadow .18s;
+    box-shadow: var(--shadow);
+  }
+  .search-input::placeholder { color: var(--text3); font-weight: 400; }
+  .search-input:focus { border-color: var(--navy2); box-shadow: 0 0 0 3px rgba(43,79,130,0.1); }
+  .search-clear {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: var(--bg3); border: none; border-radius: 50%;
+    width: 22px; height: 22px; cursor: pointer;
+    font-size: 13px; color: var(--text3); display: none;
+    align-items: center; justify-content: center;
+    font-family: monospace; line-height: 1;
+  }
+  .search-clear.visible { display: flex; }
+  .search-results {
+    background: var(--card);
+    border: 1.5px solid var(--navy2);
+    border-radius: 10px;
+    box-shadow: var(--shadow2);
+    margin-top: 4px;
+    overflow: hidden;
+    display: none;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .search-results.visible { display: block; }
+  .search-result-item {
+    padding: 11px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--bg2);
+    display: flex; align-items: center; justify-content: space-between;
+    transition: background .12s;
+  }
+  .search-result-item:last-child { border-bottom: none; }
+  .search-result-item:hover { background: var(--card2); }
+  .sri-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .sri-match { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .search-no-result { padding: 14px; text-align: center; color: var(--text3); font-size: 13px; }
+
+  /* ── ALPHA NAV ── */
+  .alpha-nav { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+  .alpha-btn { background:var(--card); border:1.5px solid var(--border); color:var(--text2); font-size:13px; font-weight:600; width:33px; height:33px; border-radius:7px; cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center; font-family:'Noto Sans TC',sans-serif; box-shadow:var(--shadow); }
+  .alpha-btn:hover { background:var(--bg2); border-color:var(--navy2); color:var(--navy); }
+  .alpha-btn.active { background:var(--navy); border-color:var(--navy); color:#fff; }
+  .alpha-btn.disabled { opacity:.22; cursor:default; pointer-events:none; }
+
+  /* ── DRUG LIST ── */
+  .drug-list { display:flex; flex-direction:column; gap:5px; margin-bottom:16px; max-height:200px; overflow-y:auto; }
+  .drug-list::-webkit-scrollbar { width:4px; }
+  .drug-list::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+  .drug-item { background:var(--card); border:1.5px solid var(--border); border-radius:10px; padding:11px 14px; cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow); }
+  .drug-item:hover { background:var(--card2); border-color:var(--navy2); }
+  .drug-item.selected { background:#e8f0fb; border-color:var(--navy2); border-left:3px solid var(--navy); }
+  .drug-name { font-size:15px; font-weight:600; color:var(--text); }
+  .drug-cat { font-size:11px; color:var(--text3); margin-top:2px; }
+  .drug-arrow { color:var(--text3); font-size:18px; }
+  .drug-item.selected .drug-arrow { color:var(--navy); }
+  .no-drugs-msg { padding:18px; text-align:center; color:var(--text3); font-size:13px; }
+
+  /* ── MODALITY ── */
+  .modality-row { display:flex; gap:10px; margin-bottom:14px; }
+  .modality-btn { flex:1; padding:13px 8px; background:var(--card); border:2px solid var(--border); border-radius:12px; cursor:pointer; transition:all .18s; text-align:center; font-family:'Noto Sans TC',sans-serif; box-shadow:var(--shadow); }
+  .modality-btn .mod-icon { font-size:22px; margin-bottom:4px; }
+  .modality-btn .mod-label { font-size:16px; font-weight:700; color:var(--text2); }
+  .modality-btn .mod-sub { font-size:11px; color:var(--text3); margin-top:3px; }
+  .modality-btn:hover { border-color:var(--navy2); background:var(--card2); }
+  .modality-btn.active-hd { background:var(--gold-lt); border-color:var(--gold-mid); }
+  .modality-btn.active-hd .mod-label { color:var(--gold); }
+  .modality-btn.active-crrt { background:var(--teal-lt); border-color:var(--teal-mid); }
+  .modality-btn.active-crrt .mod-label { color:var(--teal); }
+
+  /* ── CRRT FLOW ── */
+  .crrt-flow-panel { background:var(--card); border:1.5px solid var(--teal-mid); border-radius:12px; padding:14px; margin-bottom:14px; display:none; box-shadow:var(--shadow); }
+  .crrt-flow-panel.visible { display:block; }
+  .flow-label { font-size:13px; color:var(--text2); margin-bottom:10px; font-weight:500; }
+  .flow-options { display:flex; gap:6px; flex-wrap:wrap; }
+  .flow-btn { flex:1; min-width:58px; background:var(--bg2); border:1.5px solid var(--border); color:var(--text2); font-size:13px; font-weight:600; padding:9px 4px; border-radius:8px; cursor:pointer; transition:all .15s; text-align:center; font-family:'Noto Sans TC',sans-serif; }
+  .flow-btn:hover { border-color:var(--teal); color:var(--teal); background:var(--teal-lt); }
+  .flow-btn.active { background:var(--teal-lt); border-color:var(--teal); color:var(--teal); font-weight:700; }
+
+  /* ── WEIGHT ── */
+  .weight-panel { background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .weight-row { display:flex; align-items:center; gap:10px; }
+  .weight-input { flex:1; background:var(--bg); border:1.5px solid var(--border); border-radius:10px; padding:12px 14px; font-size:22px; font-weight:700; color:var(--text); font-family:'Noto Sans TC',sans-serif; text-align:center; outline:none; transition:border-color .18s; }
+  .weight-input::placeholder { color:#c5cad8; font-weight:400; font-size:18px; }
+  .weight-input:focus { border-color:var(--navy2); background:#fff; }
+  .weight-unit { font-size:17px; color:var(--text2); font-weight:700; min-width:24px; }
+  .weight-type-row { display:flex; gap:6px; margin-top:10px; }
+  .wtype-btn { flex:1; padding:8px 4px; background:var(--bg2); border:1.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:12px; color:var(--text3); text-align:center; transition:all .15s; font-family:'Noto Sans TC',sans-serif; line-height:1.4; }
+  .wtype-btn:hover { border-color:var(--navy2); color:var(--navy); background:#e8f0fb; }
+  .wtype-btn.active { background:#e8f0fb; border-color:var(--navy2); color:var(--navy); font-weight:600; }
+
+  /* ── CALC BTN ── */
+  .calc-btn { width:100%; padding:16px; background:linear-gradient(135deg,var(--navy),var(--navy2)); border:none; border-radius:12px; font-size:17px; font-weight:700; color:#fff; cursor:pointer; font-family:'Noto Sans TC',sans-serif; letter-spacing:1px; transition:all .18s; margin-bottom:18px; box-shadow:0 4px 16px rgba(30,58,95,0.25); }
+  .calc-btn:hover { transform:translateY(-1px); box-shadow:0 6px 22px rgba(30,58,95,0.35); }
+  .calc-btn:active { transform:translateY(0); }
+
+  /* ── RESULT ── */
+  .result-card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:20px; display:none; animation:fadeUp .3s ease; box-shadow:var(--shadow2); }
+  .result-card.visible { display:block; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .result-header { background:linear-gradient(135deg,var(--navy),var(--navy2)); padding:15px 18px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .result-drug-name { font-size:18px; font-weight:700; color:#fff; }
+  .result-modality-badge { font-size:11px; font-weight:700; letter-spacing:1px; padding:4px 12px; border-radius:20px; white-space:nowrap; }
+  .badge-hd   { background:rgba(212,168,75,0.25); color:#f5d98a; border:1px solid rgba(212,168,75,0.5); }
+  .badge-crrt { background:rgba(78,205,196,0.25); color:#8eeae5; border:1px solid rgba(78,205,196,0.5); }
+  .indications-section { background:#fff; }
+  .indication-item { padding:14px 18px; border-bottom:1px solid var(--bg2); }
+  .indication-item:last-child { border-bottom:none; }
+  .ind-type { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--navy2); margin-bottom:5px; }
+  .ind-dose { font-size:17px; font-weight:700; color:var(--text); line-height:1.6; }
+  .ind-calc { font-size:13px; font-weight:600; color:var(--teal); }
+  .ind-note { font-size:12px; color:var(--text3); margin-top:4px; }
+  .info-row { display:flex; gap:1px; background:var(--bg3); border-top:1px solid var(--border); }
+  .info-cell { flex:1; background:var(--card2); padding:12px 14px; text-align:center; }
+  .info-cell-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:4px; }
+  .info-cell-value { font-size:14px; font-weight:700; color:var(--navy); }
+  .special-notes { background:var(--purple-lt); border-top:1px solid #d8ccf0; padding:13px 18px; }
+  .special-notes-title { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--purple); margin-bottom:8px; }
+  .special-note-item { font-size:13px; color:#3a2860; line-height:1.6; padding-left:12px; border-left:2px solid var(--purple); margin-bottom:6px; }
+  .special-note-item:last-child { margin-bottom:0; }
+  .reminder-box { background:var(--gold-lt); border-top:1px solid #e8d090; padding:13px 18px; }
+  .reminder-title { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+  .reminder-item { font-size:13px; color:#5a4010; line-height:1.6; padding-left:12px; border-left:2px solid var(--gold-mid); margin-bottom:6px; }
+  .reminder-item:last-child { margin-bottom:0; }
+  .divider { height:1px; background:var(--border); margin:0 0 16px; }
+
+  /* ── FOOTER ── */
+  .footer { background:var(--navy); padding:16px 20px; text-align:center; }
+  .footer-dev { font-size:14px; font-weight:700; color:#fff; }
+  .footer-meta { font-size:12px; color:rgba(255,255,255,0.55); margin-top:3px; }
+  .footer-disclaimer { font-size:10px; color:rgba(255,255,255,0.35); margin-top:6px; line-height:1.6; }
+
+  /* scrollbar */
+  .search-results::-webkit-scrollbar { width:4px; }
+  .search-results::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-badge">Clinical Decision Support</div>
+  <h1>抗生素腎功能劑量調整</h1>
+  <div class="header-sub">HD &amp; CRRT Antibiotic Dosing Reference</div>
+  <div class="warning-banner">
+    注意：急重症患者建議於調整劑量前，先以正常腎功能劑量給藥 24 小時。本工具僅供臨床參考，請結合臨床判斷。
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STEP 1 -->
+  <div class="section-label">① 選擇藥物</div>
+
+  <!-- 搜尋框 -->
+  <div class="search-wrap">
+    <input type="text" class="search-input" id="searchInput"
+           placeholder="直接輸入藥名搜尋（如 pip, tazo, pip tazo...）"
+           oninput="onSearch()" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="search-clear" id="searchClear" onclick="clearSearch()">x</button>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <!-- 字母選單 -->
+  <div class="alpha-nav" id="alphNav"></div>
+  <div class="drug-list" id="drugList"></div>
+  <div class="divider"></div>
+
+  <!-- STEP 2 -->
+  <div class="section-label">② 透析模式</div>
+  <div class="modality-row">
+    <button class="modality-btn" id="btnHD" onclick="selectModality('HD')">
+      <div class="mod-label">HD</div>
+      <div class="mod-sub">間歇性血液透析</div>
+    </button>
+    <button class="modality-btn" id="btnCRRT" onclick="selectModality('CRRT')">
+      <div class="mod-label">CRRT</div>
+      <div class="mod-sub">連續性腎臟替代療法</div>
+    </button>
+  </div>
+
+  <div class="crrt-flow-panel" id="crrtFlowPanel">
+    <div class="flow-label">Effluent Flow Rate（透析液 + 超濾液總量）</div>
+    <div class="flow-options">
+      <button class="flow-btn" data-flow="anephric" onclick="selectFlow('anephric')">無腎<br><span style="font-size:10px">Anephric</span></button>
+      <button class="flow-btn" data-flow="1"  onclick="selectFlow('1')">1 L/hr</button>
+      <button class="flow-btn active" data-flow="2" onclick="selectFlow('2')">2 L/hr</button>
+      <button class="flow-btn" data-flow="3"  onclick="selectFlow('3')">3 L/hr</button>
+      <button class="flow-btn" data-flow="4+" onclick="selectFlow('4+')">4+ L/hr</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- STEP 3 -->
+  <div class="section-label">③ 體重</div>
+  <div class="weight-panel">
+    <div class="weight-row">
+      <input type="number" class="weight-input" id="weightInput" placeholder="50" min="10" max="300">
+      <div class="weight-unit">kg</div>
+    </div>
+    <div class="weight-type-row">
+      <button class="wtype-btn active" id="wt-actual" onclick="selectWeightType('actual')">實際體重<br>Actual BW</button>
+      <button class="wtype-btn" id="wt-ibw" onclick="selectWeightType('ibw')">理想體重<br>IBW</button>
+      <button class="wtype-btn" id="wt-adj" onclick="selectWeightType('adj')">校正體重<br>AdjBW</button>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">計算劑量</button>
+  <div class="result-card" id="resultCard"></div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-dev">Developer：林鎮均</div>
+  <div class="footer-meta">Version 1.0 &nbsp;|&nbsp; 2026年5月</div>
+  <div class="footer-disclaimer">
+    Based on Northwestern Medicine Antimicrobial CRRT Dosing Guidance (Updated Jan 2025)<br>
+    本工具僅供臨床參考，不代替臨床藥師或醫師之專業判斷。
+  </div>
+</div>
+
+<script>
+// ─── DRUG DATABASE ────────────────────────────────────────────────────────────
+// Sulbactam-durlobactam 已移除（台灣未上市）
+const DRUGS = [
+  {
+    name:'Acyclovir', letter:'A', wt:'AdjBW',
+    tags:['acyclovir','acv','zovirax'],
+    indications:[
+      { type:'標準劑量',
+        hd:'5 mg/kg q24h（透析後補充）',
+        crrt:{ anephric:'5 mg/kg q24h','1':'7.5 mg/kg q24h','2':'5 mg/kg q12h','3':'7.5 mg/kg q12h','4+':'10 mg/kg q12h'} },
+      { type:'輕度黏膜感染',
+        hd:'2.5 mg/kg q24h（透析後補充）',
+        crrt:{ anephric:'2.5 mg/kg q24h','1':'5 mg/kg q24h','2':'5 mg/kg q24h','3':'5 mg/kg q12h','4+':'5 mg/kg q12h'} }
+    ],
+    notes:['使用 AdjBW 計算（肥胖患者）']
+  },
+  {
+    name:'Ampicillin', letter:'A',
+    tags:['ampicillin','amp','ampi'],
+    indications:[
+      { type:'標準劑量',
+        hd:'2 g q12h（透析後補充）',
+        crrt:{ anephric:'2 g q24h','1':'2 g q8h','2':'2 g q8h','3':'2 g q8h，Consider TDM','4+':'2 g q6h，Consider TDM'} },
+      { type:'心內膜炎 / 腦膜炎',
+        hd:'2 g q8h（透析後補充）',
+        crrt:{ anephric:'2 g q12h','1':'2 g q8h','2':'2 g q8h','3':'2 g q6h，Consider TDM','4+':'2 g q4h，Consider TDM'} }
+    ]
+  },
+  {
+    name:'Ampicillin-sulbactam', letter:'A',
+    tags:['ampicillin sulbactam','amp sulbactam','sulbactam ampicillin','unasyn'],
+    indications:[
+      { type:'標準劑量',
+        hd:'3 g q24h（透析後補充）',
+        crrt:{ anephric:'3 g q24h','1':'3 g q8h','2':'3 g q8h','3':'3 g q6h','4+':'3 g q6h'} },
+      { type:'Carbapenem-R Acinetobacter',
+        hd:'3 g q12h 輸注4小時',
+        crrt:{ anephric:'3 g q12h 輸注4h','1':'3 g q8h 輸注4h','2':'3 g q8h 輸注4h','3':'3 g q6h 輸注4h','4+':'3 g q6h 輸注4h'} }
+    ]
+  },
+  {
+    name:'Aztreonam', letter:'A',
+    tags:['aztreonam','azactam'],
+    indications:[
+      { type:'標準劑量',
+        hd:'2 g q24h',
+        crrt:{ anephric:'2 g q24h','1':'1 g q8h','2':'2 g q12h','3':'2 g q8h','4+':'2 g q8h'} }
+    ]
+  },
+  {
+    name:'Cefazolin', letter:'C',
+    tags:['cefazolin','ancef','kefzol'],
+    indications:[
+      { type:'標準劑量',
+        hd:'1 g q24h 或 2,2,3 g 每週3次（透析後）',
+        crrt:{ anephric:'1 g q24h','1':'1 g q8h','2':'2 g q12h','3':'2 g q8h','4+':'2 g q8h'} }
+    ]
+  },
+  {
+    name:'Cefepime', letter:'C',
+    tags:['cefepime','maxipime'],
+    indications:[
+      { type:'嚴重感染（LD → 3h infusion）',
+        hd:'1 g q24h 或 2 g 每週3次（透析後）',
+        crrt:{ anephric:'1 g q24h','1':'1 g q12h','2':'1 g q8h\nConsider TDM','3':'2 g q8h\nConsider TDM','4+':'2 g q8h\nConsider TDM'} },
+      { type:'膀胱炎/輕症（<55 kg 或 ≥80歲）',
+        hd:'1 g q24h 或 2 g 每週3次（透析後）',
+        crrt:{ anephric:'1 g q24h','1':'1 g q12h','2':'1 g q8h\nConsider TDM','3':'1 g q8h\nConsider TDM','4+':'2 g q8h\nConsider TDM'} }
+    ],
+    notes:['建議治療藥物監測（TDM）','嚴重感染需 Loading Dose，延長輸注 3 小時']
+  },
+  {
+    name:'Cefiderocol', letter:'C',
+    tags:['cefiderocol','fetroja'],
+    indications:[
+      { type:'標準劑量',
+        hd:'750 mg q12h',
+        crrt:{ anephric:'750 mg q12h','1':'1.5 g q12h','2':'2 g q12h','3':'1.5 g q8h','4+':'2 g q8h'} }
+    ]
+  },
+  {
+    name:'Cefoxitin', letter:'C',
+    tags:['cefoxitin','mefoxin'],
+    indications:[
+      { type:'M. abscessus',
+        hd:'1 g q24h',
+        crrt:{ anephric:'1 g q24h','1':'2 g q12h','2':'2 g q12h','3':'2 g q8h','4+':'2 g q8h'} }
+    ]
+  },
+  {
+    name:'Ceftaroline', letter:'C',
+    tags:['ceftaroline','teflaro'],
+    indications:[
+      { type:'嚴重感染 / 菌血症 / 骨髓炎',
+        hd:'200 mg q8h',
+        crrt:{ anephric:'200 mg q8h','1':'400 mg q12h','2':'300 mg q8h','3':'400 mg q8h','4+':'400 mg q8h'} }
+    ],
+    notes:['與白血球減少相關，需密切監測毒性','CRRT flow >2 L/hr 時資料有限，請謹慎']
+  },
+  {
+    name:'Ceftazidime', letter:'C',
+    tags:['ceftazidime','fortaz','tazicef'],
+    indications:[
+      { type:'標準劑量',
+        hd:'1 g q24h 或 2,2,2 g 每週3次（透析後）',
+        crrt:{ anephric:'1 g q24h','1':'1 g q12h','2':'2 g q12h','3':'2 g q8h','4+':'2 g q8h'} }
+    ]
+  },
+  {
+    name:'Ceftazidime-avibactam', letter:'C',
+    tags:['ceftazidime avibactam','avibactam ceftazidime','caz avi','avycaz'],
+    indications:[
+      { type:'標準劑量',
+        hd:'0.94 g q24h',
+        crrt:{ anephric:'0.94 g q24h','1':'1.25 g q12h','2':'2.5 g q12h','3':'2.5 g q8h','4+':'2.5 g q8h'} }
+    ]
+  },
+  {
+    name:'Ceftolozane-tazobactam', letter:'C',
+    tags:['ceftolozane tazobactam','tazobactam ceftolozane','zerbaxa'],
+    indications:[
+      { type:'標準劑量',
+        hd:'750 mg q8h',
+        crrt:{ anephric:'750 mg q8h','1':'1.5 g q8h','2':'1.5 g q8h','3':'3 g q8h','4+':'3 g q8h'} }
+    ]
+  },
+  {
+    name:'Ciprofloxacin', letter:'C',
+    tags:['ciprofloxacin','cipro'],
+    indications:[
+      { type:'嚴重感染 / Pseudomonas / 降階治療',
+        hd:'400 mg q24h',
+        crrt:{ anephric:'400 mg q24h','1':'400 mg q24h','2':'400 mg q12h','3':'400 mg q8h','4+':'400 mg q8h'} },
+      { type:'輕症 / UTI / 預防',
+        hd:'400 mg q24h',
+        crrt:{ anephric:'400 mg q24h','1':'400 mg q24h','2':'400 mg q12h','3':'400 mg q12h','4+':'400 mg q12h'} }
+    ]
+  },
+  {
+    name:'Colistin', letter:'C',
+    tags:['colistin','polymyxin e','coly mycin'],
+    indications:[
+      { type:'尿路感染（僅限）',
+        hd:'1.5 mg/kg q48h',
+        crrt:{ anephric:'1.5 mg/kg q48h','1':'Consult ID','2':'Consult ID','3':'Consult ID','4+':'Consult ID'} }
+    ],
+    notes:['嚴重感染請改用 Polymyxin B（不需腎功能調整）','CRRT 使用前請會診感染科']
+  },
+  {
+    name:'Daptomycin', letter:'D', wt:'AdjBW',
+    tags:['daptomycin','cubicin','dapto'],
+    indications:[
+      { type:'嚴重 Staph 感染（8 mg/kg）',
+        hd:'8 mg/kg 每週3次（透析後）',
+        crrt:{ anephric:'8 mg/kg 3x/週 post-HD','1':'6-8 mg/kg q24h','2':'8 mg/kg q24h','3':'8 mg/kg q24h','4+':'8 mg/kg q24h'} },
+      { type:'Enterococcus 感染（10 mg/kg）',
+        hd:'10 mg/kg 每週3次（透析後）',
+        crrt:{ anephric:'10 mg/kg 3x/週 post-HD','1':'8-10 mg/kg q24h\n每週2次監測 CK','2':'10 mg/kg q24h','3':'10 mg/kg q24h','4+':'10 mg/kg q24h'} }
+    ],
+    notes:['四捨五入至最近 250 mg，最大 1000 mg','使用 AdjBW（肥胖患者）','監測肌酸激酶（CK）']
+  },
+  {
+    name:'Entecavir', letter:'E',
+    tags:['entecavir','baraclude'],
+    indications:[
+      { type:'B 型肝炎治療',
+        hd:'0.05-0.1 mg/day',
+        crrt:{ anephric:'0.05-0.1 mg/day','1':'0.1 mg/day','2':'0.2 mg/day','3':'0.3 mg/day','4+':'0.4 mg/day'} }
+    ]
+  },
+  {
+    name:'Ethambutol', letter:'E', wt:'IBW',
+    tags:['ethambutol','myambutol','emb'],
+    indications:[
+      { type:'TB / NTM（參照專科指引）',
+        hd:'15 或 25 mg/kg 每週3次（透析後）',
+        crrt:{ anephric:'15 或 25 mg/kg 3x/週 post-HD','1':'15-20 mg/kg PO q24h\nConsider ID Consult','2':'15-20 mg/kg PO q24h','3':'15-20 mg/kg PO q24h','4+':'15-20 mg/kg PO q24h'} }
+    ],
+    notes:['使用 IBW 計算','四捨五入至最近 100 或 400 mg 錠']
+  },
+  {
+    name:'Fluconazole', letter:'F',
+    tags:['fluconazole','diflucan','fluco'],
+    indications:[
+      { type:'播散性感染',
+        hd:'400 mg 每週3次（透析後）',
+        crrt:{ anephric:'400 mg 3x/週 post-HD','1':'800 mg x1 → 400 mg q24h','2':'800 mg q24h','3':'800 mg q24h','4+':'800 mg q24h\n(>120 kg: 12→6 mg/kg q24h)'} },
+      { type:'食道念珠菌感染',
+        hd:'200 mg 每週3次（透析後）',
+        crrt:{ anephric:'200 mg 3x/週','1':'200 mg q24h','2':'200 mg q24h','3':'200 mg q24h','4+':'200 mg q24h'} },
+      { type:'預防',
+        hd:'100 mg 每週3次（透析後）',
+        crrt:{ anephric:'100 mg 3x/週','1':'100 mg q24h','2':'100 mg q24h','3':'100 mg q24h','4+':'100 mg q24h'} }
+    ],
+    notes:['臨床適當時應給予 Loading Dose']
+  },
+  {
+    name:'Flucytosine', letter:'F',
+    tags:['flucytosine','5fc','ancobon'],
+    indications:[
+      { type:'標準劑量',
+        hd:'25 mg/kg q48h',
+        crrt:{ anephric:'25 mg/kg q48h','1':'25 mg/kg q24h','2':'25 mg/kg q12h','3':'25 mg/kg q6h','4+':'25 mg/kg q6h'} }
+    ]
+  },
+  {
+    name:'Foscarnet', letter:'F', wt:'AdjBW',
+    tags:['foscarnet','foscavir'],
+    indications:[
+      { type:'標準劑量',
+        hd:'不建議（0 mg/kg/day）',
+        crrt:{ anephric:'0 mg/kg/day','1':'20 mg/kg/day','2':'45 mg/kg/day','3':'70 mg/kg/day','4+':'90 mg/kg/day'} }
+    ],
+    notes:['使用 AdjBW 計算']
+  },
+  {
+    name:'Ganciclovir', letter:'G',
+    tags:['ganciclovir','cytovene','gcv'],
+    indications:[
+      { type:'誘導期（Induction）',
+        hd:'1.25 mg/kg q24h',
+        crrt:{ anephric:'1.25 mg/kg q24h','1':'2.5 mg/kg q24h','2':'2.5 mg/kg q12h','3':'5 mg/kg q12h','4+':'5 mg/kg q12h'} },
+      { type:'維持期（Maintenance）',
+        hd:'0.625 mg/kg q24h',
+        crrt:{ anephric:'0.625 mg/kg q24h','1':'1.25 mg/kg q24h','2':'2.5 mg/kg q24h','3':'5 mg/kg q24h','4+':'5 mg/kg q24h'} }
+    ]
+  },
+  {
+    name:'Imipenem', letter:'I',
+    tags:['imipenem','primaxin','ipm'],
+    indications:[
+      { type:'標準劑量（imipenem 500 mg 計）',
+        hd:'500 mg q12h',
+        crrt:{ anephric:'500 mg q12h','1':'500 mg q12h','2':'500 mg q8h','3':'500 mg q6h','4+':'1 g q8h'} }
+    ]
+  },
+  {
+    name:'Imipenem-relebactam', letter:'I',
+    tags:['imipenem relebactam','relebactam imipenem','recarbrio'],
+    indications:[
+      { type:'1.25 g = IPM 500 + cilastatin 500 + relebactam 250',
+        hd:'500 mg q6h',
+        crrt:{ anephric:'500 mg q6h','1':'500 mg q6h','2':'750 mg q6h','3':'1 g q6h','4+':'1.25 g q6h'} }
+    ]
+  },
+  {
+    name:'Levofloxacin', letter:'L',
+    tags:['levofloxacin','levaquin','levo'],
+    indications:[
+      { type:'標準劑量',
+        hd:'750 mg x1 → 500 mg q48h',
+        crrt:{ anephric:'750 mg x1 → 500 mg q48h','1':'750 mg x1 → 250 mg q24h','2':'750 mg x1 → 500 mg q24h','3':'750 mg q24h','4+':'750 mg q24h'} }
+    ],
+    notes:['第一劑給予 750 mg Loading Dose']
+  },
+  {
+    name:'Linezolid', letter:'L',
+    tags:['linezolid','zyvox','lzd'],
+    indications:[
+      { type:'標準劑量',
+        hd:'600 mg q12h',
+        crrt:{ anephric:'600 mg q12h','1':'600 mg q12h','2':'600 mg q12h','3':'600 mg q12h','4+':'600 mg q12h'} }
+    ],
+    notes:['MIC ≥2 mcg/mL 或 CRRT >3 L/hr 且重症/CNS感染 → 考慮 600 mg q8h','本藥不需腎功能調整，但仍須監測毒性（血小板低下、神經毒性）']
+  },
+  {
+    name:'Meropenem', letter:'M',
+    tags:['meropenem','merrem','mem'],
+    indications:[
+      { type:'全身性/CNS/敗血症（LD → 3h infusion）',
+        hd:'1 g q24h',
+        crrt:{ anephric:'1 g q24h','1':'500 mg q8h','2':'1 g q8h','3':'1 g q8h','4+':'1 g q8h\n(CNS/Pseudomonas: 2 g q8h)'} }
+    ],
+    notes:['CNS/Pseudomonas：4+ L/hr 時使用 2 g q8h','建議延長輸注（3 小時）']
+  },
+  {
+    name:'Meropenem-vaborbactam', letter:'M',
+    tags:['meropenem vaborbactam','vaborbactam meropenem','vabomere'],
+    indications:[
+      { type:'標準劑量（combination 計）',
+        hd:'1 g q12h',
+        crrt:{ anephric:'1 g q12h','1':'1 g q8h','2':'2 g q8h','3':'2 g q8h','4+':'4 g q8h'} }
+    ]
+  },
+  {
+    name:'Metronidazole', letter:'M',
+    tags:['metronidazole','flagyl','metro'],
+    indications:[
+      { type:'標準劑量',
+        hd:'500 mg q12h',
+        crrt:{ anephric:'500 mg q12h','1':'500 mg q12h','2':'500 mg q8h','3':'500 mg q8h','4+':'500 mg q8h'} }
+    ],
+    notes:['本藥通常不需腎功能調整']
+  },
+  {
+    name:'Micafungin', letter:'M',
+    tags:['micafungin','mycamine'],
+    indications:[
+      { type:'標準劑量',
+        hd:'100 mg q24h',
+        crrt:{ anephric:'100 mg q24h','1':'150 mg x1 → 100 mg q24h','2':'150 mg x1 → 100 mg q24h','3':'150 mg x1 → 100 mg q24h','4+':'150 mg x1 → 100 mg q24h'} }
+    ],
+    notes:['CRRT：Loading 150 mg → 維持 100 mg q24h','ECMO 合併 CRRT：200 mg q24h','心內膜炎/食道念珠菌/耐藥菌/肥胖 → 劑量增加']
+  },
+  {
+    name:'Oseltamivir', letter:'O',
+    tags:['oseltamivir','tamiflu'],
+    indications:[
+      { type:'治療',
+        hd:'75 mg x1 → 30 mg 每週3次（透析後）',
+        crrt:{ anephric:'75 mg x1 → 30 mg 3x/週 post-HD','1':'30 mg q24h','2':'30 mg q12h','3':'75 mg q12h','4+':'75 mg q12h'} }
+    ]
+  },
+  {
+    name:'Penicillin G', letter:'P',
+    tags:['penicillin g','pen g','benzylpenicillin'],
+    indications:[
+      { type:'標準劑量',
+        hd:'2 MU q8h',
+        crrt:{ anephric:'2 MU q8h','1':'4 MU Load → 2 MU q4h','2':'4 MU q6h','3':'4 MU q4h','4+':'4 MU q4h'} }
+    ]
+  },
+  {
+    name:'Piperacillin-tazobactam', letter:'P',
+    tags:['piperacillin tazobactam','tazobactam piperacillin','pip tazo','tazo pip','pip taz','taz pip','zosyn','tazocin'],
+    indications:[
+      { type:'標準劑量（LD → 4h infusion）',
+        hd:'4.5 g q12h',
+        crrt:{ anephric:'4.5 g q12h','1':'4.5 g q12h','2':'4.5 g q8h','3':'4.5 g q8h','4+':'4.5 g q8h'} }
+    ],
+    notes:['建議延長輸注（4 小時）']
+  },
+  {
+    name:'TMP-SMX', letter:'T', wt:'AdjBW',
+    tags:['tmp smx','smx tmp','trimethoprim sulfamethoxazole','sulfamethoxazole trimethoprim','cotrimoxazole','bactrim','septra'],
+    indications:[
+      { type:'嚴重全身性感染（TMP 劑量計）',
+        hd:'2.5 mg/kg q24h（max 320 mg）',
+        crrt:{ anephric:'2.5 mg/kg q24h (max 320 mg)','1':'5 mg/kg q24h','2':'7.5 mg/kg q24h','3':'5 mg/kg q12h','4+':'5 mg/kg q12h'} },
+      { type:'PJP 治療（TMP 劑量計）',
+        hd:'5 mg/kg q24h（max 320 mg）',
+        crrt:{ anephric:'5 mg/kg q24h (max 320 mg)','1':'7.5 mg/kg q24h','2':'5 mg/kg q12h','3':'5 mg/kg q12h','4+':'5 mg/kg q8h\n(max 320 mg/dose)'} }
+    ],
+    notes:['使用 AdjBW 計算','PO 劑量四捨五入至最近 DS 錠（160 mg TMP）']
+  },
+  {
+    name:'Vancomycin', letter:'V',
+    tags:['vancomycin','vanco','vancocin'],
+    indications:[
+      { type:'依 AUC 監測（藥師評估）',
+        hd:'依 AUC protocol，請會診藥師',
+        crrt:{ anephric:'依 AUC protocol','1':'Loading 20-25 mg/kg\n→ 10-15 mg/kg q24h，依濃度調整','2':'Loading 20-25 mg/kg\n→ 10-15 mg/kg q24h，依濃度調整','3':'Loading 20-25 mg/kg\n→ 10-15 mg/kg q24h，依濃度調整','4+':'Loading 20-25 mg/kg\n→ 10-15 mg/kg q24h，依濃度調整'} }
+    ],
+    notes:['四捨五入至最近 250 mg','Loading：20-25 mg/kg（一次性）','維持：10-15 mg/kg q24h，依 AUC/trough 調整','請會診臨床藥師協助劑量監測']
+  }
+];
+
+// ─── GROUP BY LETTER ─────────────────────────────────────────────────────────
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const DRUG_MAP = {};
+DRUGS.forEach(d => {
+  if (!DRUG_MAP[d.letter]) DRUG_MAP[d.letter] = [];
+  DRUG_MAP[d.letter].push(d);
+});
+const AVAILABLE = new Set(DRUGS.map(d => d.letter));
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const S = { letter:null, drug:null, modality:null, flow:'2', weightType:'actual' };
+
+// ─── SEARCH ──────────────────────────────────────────────────────────────────
+// Tokenised order-independent matching:
+// query "pip tazo" matches any drug whose search corpus contains BOTH "pip" and "tazo"
+// regardless of which appears first.
+function tokenMatch(query, drug) {
+  const corpus = [drug.name, ...(drug.tags || [])].join(' ').toLowerCase();
+  const tokens = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  return tokens.every(tok => corpus.includes(tok));
+}
+
+function onSearch() {
+  const raw = document.getElementById('searchInput').value;
+  const clr = document.getElementById('searchClear');
+  const res  = document.getElementById('searchResults');
+  clr.classList.toggle('visible', raw.trim().length > 0);
+
+  if (raw.trim().length < 1) { res.classList.remove('visible'); res.innerHTML=''; return; }
+
+  const matched = DRUGS.filter(d => tokenMatch(raw, d));
+  if (!matched.length) {
+    res.innerHTML = '<div class="search-no-result">找不到符合的藥物</div>';
+  } else {
+    res.innerHTML = matched.map((d,i) => `
+      <div class="search-result-item" data-idx="${i}" onclick="pickSearchResult(${DRUGS.indexOf(d)})">
+        <div>
+          <div class="sri-name">${d.name}</div>
+          <div class="sri-match">${d.letter} &nbsp;|&nbsp; ${d.indications.length > 1 ? d.indications.length+' 種適應症' : '1 種適應症'}</div>
+        </div>
+        <div class="drug-arrow">›</div>
+      </div>`).join('');
+  }
+  res.classList.add('visible');
+}
+
+function pickSearchResult(idx) {
+  const d = DRUGS[idx];
+  // clear search UI
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').classList.remove('visible');
+  document.getElementById('searchResults').classList.remove('visible');
+  document.getElementById('searchResults').innerHTML = '';
+  // select by letter then drug
+  selectLetter(d.letter);
+  // find position in letter group and select
+  const drugs = DRUG_MAP[d.letter] || [];
+  const pos = drugs.indexOf(d);
+  if (pos >= 0) {
+    S.drug = d;
+    setTimeout(() => {
+      const items = document.querySelectorAll('.drug-item');
+      items.forEach((el, j) => el.classList.toggle('selected', j === pos));
+    }, 30);
+  }
+  hideResult();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').classList.remove('visible');
+  document.getElementById('searchResults').classList.remove('visible');
+  document.getElementById('searchResults').innerHTML = '';
+}
+
+// close dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) {
+    document.getElementById('searchResults').classList.remove('visible');
+  }
+});
+
+// ─── ALPHA NAV ───────────────────────────────────────────────────────────────
+function buildAlphaNav() {
+  const nav = document.getElementById('alphNav');
+  LETTERS.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'alpha-btn' + (AVAILABLE.has(l) ? '' : ' disabled');
+    btn.textContent = l;
+    if (AVAILABLE.has(l)) btn.onclick = () => selectLetter(l);
+    nav.appendChild(btn);
+  });
+}
+
+function selectLetter(l) {
+  S.letter = l; S.drug = null;
+  document.querySelectorAll('.alpha-btn').forEach(b => b.classList.toggle('active', b.textContent === l));
+  renderDrugList();
+  hideResult();
+}
+
+function renderDrugList() {
+  const list = document.getElementById('drugList');
+  list.innerHTML = '';
+  const drugs = DRUG_MAP[S.letter] || [];
+  if (!drugs.length) { list.innerHTML = '<div class="no-drugs-msg">此字母無藥物</div>'; return; }
+  drugs.forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'drug-item';
+    el.innerHTML = `
+      <div>
+        <div class="drug-name">${d.name}</div>
+        <div class="drug-cat">${d.wt ? '體重依據：'+d.wt+'　' : ''}${d.indications.length>1 ? d.indications.length+' 種適應症' : ''}</div>
+      </div>
+      <div class="drug-arrow">›</div>`;
+    el.onclick = () => {
+      S.drug = d;
+      document.querySelectorAll('.drug-item').forEach((e, j) => e.classList.toggle('selected', j === i));
+      hideResult();
+    };
+    list.appendChild(el);
+  });
+}
+
+// ─── MODALITY ────────────────────────────────────────────────────────────────
+function selectModality(m) {
+  S.modality = m;
+  document.getElementById('btnHD').className   = 'modality-btn' + (m==='HD'   ? ' active-hd'   : '');
+  document.getElementById('btnCRRT').className = 'modality-btn' + (m==='CRRT' ? ' active-crrt' : '');
+  document.getElementById('crrtFlowPanel').classList.toggle('visible', m==='CRRT');
+  hideResult();
+}
+
+// ─── FLOW ────────────────────────────────────────────────────────────────────
+function selectFlow(f) {
+  S.flow = f;
+  document.querySelectorAll('.flow-btn').forEach(b => b.classList.toggle('active', b.dataset.flow === f));
+  hideResult();
+}
+
+// ─── WEIGHT TYPE ─────────────────────────────────────────────────────────────
+function selectWeightType(t) {
+  S.weightType = t;
+  ['actual','ibw','adj'].forEach(x => document.getElementById('wt-'+x).classList.toggle('active', x===t));
+}
+
+// ─── CALCULATE ───────────────────────────────────────────────────────────────
+function calculate() {
+  if (!S.drug)     { alert('請先選擇藥物'); return; }
+  if (!S.modality) { alert('請選擇透析模式（HD 或 CRRT）'); return; }
+  const w = parseFloat(document.getElementById('weightInput').value);
+  if (!w || w < 10 || w > 300) { alert('請輸入合理體重（10–300 kg）'); return; }
+  renderResult(w);
+}
+
+// ─── WEIGHT INJECTION ────────────────────────────────────────────────────────
+function injectWeight(str, w) {
+  return str.replace(/(\d+(?:\.\d+)?(?:-\d+(?:\.\d+)?)?)\s*mg\/kg(?:\/day)?/g, (match, range) => {
+    const parts = range.split('-');
+    if (parts.length === 2) {
+      const lo = Math.round(parseFloat(parts[0]) * w);
+      const hi = Math.round(parseFloat(parts[1]) * w);
+      return `${range} mg/kg <span class="ind-calc">(≈ ${lo}–${hi} mg)</span>`;
+    }
+    const total = Math.round(parseFloat(parts[0]) * w);
+    return `${range} mg/kg <span class="ind-calc">(≈ ${total} mg)</span>`;
+  });
+}
+
+function getLoadingNote(name) {
+  const n = name.toLowerCase();
+  if (n.includes('vancomycin'))   return '20-25 mg/kg';
+  if (n.includes('cefepime'))     return '依感染嚴重度';
+  if (n.includes('meropenem'))    return '依感染嚴重度';
+  if (n.includes('fluconazole'))  return '視情況給予';
+  if (n.includes('micafungin'))   return '150 mg x1';
+  if (n.includes('levofloxacin')) return '750 mg x1';
+  return '同正常腎功能';
+}
+
+// ─── RENDER RESULT ───────────────────────────────────────────────────────────
+function renderResult(w) {
+  const d = S.drug, m = S.modality, f = S.flow;
+  const wtLabel = { actual:'實際體重', ibw:'理想體重(IBW)', adj:'校正體重(AdjBW)' }[S.weightType];
+  const wtNote  = `${wtLabel} ${w} kg${d.wt ? '（本藥建議使用 '+d.wt+'）' : ''}`;
+  const badgeClass = m==='HD' ? 'badge-hd' : 'badge-crrt';
+  const badgeText  = m==='HD' ? '間歇性 HD' : `CRRT ${f==='anephric' ? 'Anephric' : f+' L/hr'}`;
+
+  let html = `
+    <div class="result-header">
+      <div class="result-drug-name">${d.name}</div>
+      <div class="result-modality-badge ${badgeClass}">${badgeText}</div>
+    </div>
+    <div class="indications-section">`;
+
+  d.indications.forEach(ind => {
+    let raw  = m==='HD' ? ind.hd : (ind.crrt[f] || '—');
+    let dose = injectWeight(raw, w).replace(/\n/g, '<br>');
+    html += `
+      <div class="indication-item">
+        <div class="ind-type">${ind.type}</div>
+        <div class="ind-dose">${dose}</div>
+        <div class="ind-note">${wtNote}</div>
+      </div>`;
+  });
+  html += `</div>`;
+
+  if (m === 'CRRT') {
+    html += `
+      <div class="info-row">
+        <div class="info-cell">
+          <div class="info-cell-label">Loading Dose</div>
+          <div class="info-cell-value">${getLoadingNote(d.name)}</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-cell-label">Flow Rate</div>
+          <div class="info-cell-value">${f==='anephric' ? 'Anephric' : f+' L/hr'}</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-cell-label">體重</div>
+          <div class="info-cell-value">${w} kg</div>
+        </div>
+      </div>`;
+  }
+
+  if (d.notes && d.notes.length) {
+    html += `
+      <div class="special-notes">
+        <div class="special-notes-title">特殊注意事項</div>
+        ${d.notes.map(n => `<div class="special-note-item">${n}</div>`).join('')}
+      </div>`;
+  }
+
+  if (m === 'CRRT') {
+    html += `
+      <div class="reminder-box">
+        <div class="reminder-title">CRRT 給藥原則</div>
+        <div class="reminder-item">首劑建議給予正常腎功能劑量（Loading Dose）</div>
+        <div class="reminder-item">確認 CRRT 未中斷（凝血、管路問題等）</div>
+        <div class="reminder-item">Effluent rate = 透析液流量 + 超濾液流量</div>
+      </div>`;
+  }
+
+  const card = document.getElementById('resultCard');
+  card.innerHTML = html;
+  card.classList.add('visible');
+  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
+function hideResult() {
+  const c = document.getElementById('resultCard');
+  c.classList.remove('visible');
+  c.innerHTML = '';
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+buildAlphaNav();
+</script>
+</body>
+</html>
